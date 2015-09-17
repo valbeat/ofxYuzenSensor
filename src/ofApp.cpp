@@ -5,10 +5,12 @@ using namespace cv;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
+    
     ofSetFrameRate(60);
     ofSetBackgroundAuto(false); //フレーム更新時に塗り潰しを無効化
     ofBackground(0, 0, 0); //背景色を黒に設定
+    
+    sender.setup(HOST, PORT);
     
     camWidth = ofGetWidth();
     camHeight = ofGetHeight();
@@ -16,7 +18,7 @@ void ofApp::setup(){
     #ifdef _USE_LIVE_VIDEO
         camera.listDevices();
         camera.setVerbose(true);
-        camera.setDeviceID(1);
+        camera.setDeviceID(0);
         camera.initGrabber(camWidth,camHeight);
     #else
         //video.loadMovie();
@@ -64,7 +66,25 @@ void ofApp::update(){
             y = contourFinder.getBoundingRect(i).y;
             z = contourFinder.getBoundingRect(i).area();
             z = z / 1000;
-            cout << i << "," << x << "," << y << "," << z <<endl;
+            ofxOscMessage m;
+            m.setAddress( "/user" );
+            m.addIntArg(i);
+            m.addIntArg(x);
+            m.addIntArg(y);
+            m.addIntArg(z);
+            sender.sendMessage(m);
+            String msg_string;
+            msg_string = m.getAddress();
+            for (int i=0; i<m.getNumArgs(); i++ ) {
+                msg_string += " ";
+                if(m.getArgType(i) == OFXOSC_TYPE_INT32)
+                    msg_string += ofToString( m.getArgAsInt32(i));
+                else if(m.getArgType(i) == OFXOSC_TYPE_FLOAT)
+                    msg_string += ofToString( m.getArgAsFloat(i));
+                else if(m.getArgType(i) == OFXOSC_TYPE_STRING)
+                    msg_string += m.getArgAsString(i);
+            }
+            cout << msg_string << endl;
         }
     }
     

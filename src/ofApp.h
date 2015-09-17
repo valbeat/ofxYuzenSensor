@@ -3,7 +3,11 @@
 #include "ofMain.h"
 #include "ofxCv.h"
 #include "ofxGui.h"
+#include "ofxOsc.h"
 #define _USE_LIVE_VIDEO
+
+#define HOST "localhost" //送信先ホストのIPを設定
+#define PORT 6666 //ポート番号
 
 class ofApp : public ofBaseApp{
 
@@ -21,7 +25,7 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-    
+
         //カメラ
         ofVideoGrabber camera;
         int camWidth;
@@ -52,8 +56,11 @@ class ofApp : public ofBaseApp{
         ofxToggle cameraFlag;
         ofxToggle guiFlag;
     
-    
         //ボタンの動作
         void resetBackgroundPressed();
         void toggleFullScreenPressed();
+    
+    private:
+        ofxOscSender sender;
+
 };
