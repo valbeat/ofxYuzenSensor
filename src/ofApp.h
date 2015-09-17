@@ -34,14 +34,14 @@ class ofApp : public ofBaseApp{
         bool isLearnBg; // 背景学習中かどうか
     
         // 画像
-        ofImage bgImg;
-        ofImage threshold;
+        ofImage bgImg; //背景画像
+        ofImage diffImg; //差分画像
     
         //GUI
         ofxPanel gui;
     
-        ofxFloatSlider bgThresh;
-        ofxFloatSlider contourThresh;
+        ofxFloatSlider bgThresh; //2値化閾値制御
+        ofxFloatSlider contourThresh; //輪郭閾値制御
     
         ofxButton resetBackgroundButton;
         ofxButton fullScreenToggle;

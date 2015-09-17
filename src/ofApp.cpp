@@ -5,20 +5,25 @@ using namespace cv;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+
+    ofSetFrameRate(60);
+    ofSetBackgroundAuto(false); //フレーム更新時に塗り潰しを無効化
+    ofBackground(0, 0, 0); //背景色を黒に設定
+    
+    camWidth = ofGetWidth();
+    camHeight = ofGetHeight();
+    
     #ifdef _USE_LIVE_VIDEO
         camera.listDevices();
         camera.setVerbose(true);
         camera.setDeviceID(0);
-        camera.initGrabber(ofGetWidth(), ofGetHeight());
+        camera.initGrabber(camWidth,camHeight);
     #else
         //video.loadMovie();
         //video.play();
     #endif
     
-    ofSetFrameRate(60);
-    ofSetBackgroundAuto(false); //フレーム更新時に塗り潰しを無効化
-    ofBackground(0, 0, 0); //背景色を黒に設定
-    
+
     //輪郭の設定
     contourFinder.setMinAreaRadius(10);
     contourFinder.setMaxAreaRadius(200);
@@ -34,7 +39,7 @@ void ofApp::setup(){
     //GUIの設定
     gui.setup();
     gui.add(bgThresh.setup("background thresh", 50, 0, 100));
-    gui.add(contourThresh.setup("contour finder thresh", 100, 0, 255));
+    gui.add(contourThresh.setup("contour finder thresh", 500, 0, 1000));
     gui.add(resetBackgroundButton.setup("reset background"));
     gui.add(fullScreenToggle.setup("full screen"));
     gui.add(diffFlag.setup("diff",true));
@@ -50,10 +55,10 @@ void ofApp::update(){
     camera.update();
     if(camera.isFrameNew()) {
         background.setThresholdValue(bgThresh);
-        background.update(camera, threshold);
-        threshold.update();
+        background.update(camera, diffImg);
+        diffImg.update();
         contourFinder.setThreshold(contourThresh);
-        contourFinder.findContours(threshold);
+        contourFinder.findContours(diffImg);
     }
     
 }
@@ -62,14 +67,14 @@ void ofApp::draw(){
     ofNoFill();
     
     if (cameraFlag) {
-        camera.draw(0,0,ofGetWidth(),ofGetHeight());
+        camera.draw(0, 0, camWidth, camHeight);
     }
     if (bgFlag) {
-        bgImg.draw(0, 0, ofGetWidth(),ofGetHeight());
+        bgImg.draw(0, 0, camWidth, camHeight);
     }
     if (diffFlag) {
         ofSetColor(255);
-        threshold.draw(0,0);
+        diffImg.draw(0,0);
     }
     if (contourFlag) {
         ofSetColor(0, 255, 255);
