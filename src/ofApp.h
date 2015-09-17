@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxCv.h"
 #include "ofxGui.h"
+#define _USE_LIVE_VIDEO
 
 class ofApp : public ofBaseApp{
 
@@ -21,8 +22,34 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
+        //カメラ
         ofVideoGrabber camera;
         int camWidth;
         int camHeight;
-        
+    
+        //OpenCV
+        ofxCv::ContourFinder contourFinder; //輪郭抽出
+        ofxCv::RunningBackground background; //背景
+    
+        ofImage threshold;
+    
+        //GUI
+        ofxPanel gui;
+    
+        ofxFloatSlider bgThresh;
+        ofxFloatSlider contourThresh;
+    
+        ofxButton resetBackgroundButton;
+        ofxButton fullScreenToggle;
+    
+        ofxToggle diffFlag;
+        ofxToggle contourFlag;
+        ofxToggle bgFlag;
+        ofxToggle cameraFlag;
+        ofxToggle guiFlag;
+    
+    
+        //ボタンの動作
+        void resetBackgroundPressed();
+        void toggleFullScreenPressed();
 };
