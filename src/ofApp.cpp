@@ -5,8 +5,17 @@ using namespace cv;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    
+    #ifdef _USE_LIVE_VIDEO
+        camera.listDevices();
+        camera.setVerbose(true);
+        camera.setDeviceID(0);
+        camera.initGrabber(camWidth, camHeight);
+    #else
+        //video.loadMovie();
+        //video.play();
+    #endif
     camera.initGrabber(ofGetWidth(), ofGetHeight());
+    
 }
 
 //--------------------------------------------------------------
