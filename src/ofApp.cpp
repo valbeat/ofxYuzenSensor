@@ -1,18 +1,24 @@
 #include "ofApp.h"
 
+using namespace ofxCv;
+using namespace cv;
+
 //--------------------------------------------------------------
 void ofApp::setup(){
-
+    
+    camera.initGrabber(ofGetWidth(), ofGetHeight());
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    camera.update();
 
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+    ofNoFill();
+    camera.draw(0,0, ofGetWidth(), ofGetHeight());
 }
 
 //--------------------------------------------------------------
