@@ -31,6 +31,10 @@ class ofApp : public ofBaseApp{
         ofxCv::ContourFinder contourFinder; //輪郭抽出
         ofxCv::RunningBackground background; //背景
     
+        bool isLearnBg; // 背景学習中かどうか
+    
+        // 画像
+        ofImage bgImg;
         ofImage threshold;
     
         //GUI
