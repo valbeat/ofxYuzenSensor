@@ -16,7 +16,7 @@ void ofApp::setup(){
     #ifdef _USE_LIVE_VIDEO
         camera.listDevices();
         camera.setVerbose(true);
-        camera.setDeviceID(0);
+        camera.setDeviceID(1);
         camera.initGrabber(camWidth,camHeight);
     #else
         //video.loadMovie();
@@ -42,12 +42,11 @@ void ofApp::setup(){
     gui.add(contourThresh.setup("contour finder thresh", 500, 0, 1000));
     gui.add(resetBackgroundButton.setup("reset background"));
     gui.add(fullScreenToggle.setup("full screen"));
-    gui.add(diffFlag.setup("diff",true));
-    gui.add(contourFlag.setup("contour",true));
-    gui.add(bgFlag.setup("background",false));
-    gui.add(cameraFlag.setup("camera",true));
+    gui.add(diffFlag.setup("diff image",true));
+    gui.add(contourFlag.setup("contour image",true));
+    gui.add(bgFlag.setup("background image",false));
+    gui.add(cameraFlag.setup("camera image",true));
     gui.add(guiFlag.setup("gui",true));
-//
 }
 
 //--------------------------------------------------------------
@@ -59,6 +58,14 @@ void ofApp::update(){
         diffImg.update();
         contourFinder.setThreshold(contourThresh);
         contourFinder.findContours(diffImg);
+        float x,y,z;
+        for (int i = 0; i < contourFinder.size(); i++) {
+            x = contourFinder.getBoundingRect(i).x;
+            y = contourFinder.getBoundingRect(i).y;
+            z = contourFinder.getBoundingRect(i).area();
+            z = z / 1000;
+            cout << i << "," << x << "," << y << "," << z <<endl;
+        }
     }
     
 }
