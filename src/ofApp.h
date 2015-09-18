@@ -34,18 +34,34 @@ class ofApp : public ofBaseApp{
         //OpenCV
         ofxCv::ContourFinder contourFinder; //輪郭抽出
         ofxCv::RunningBackground background; //背景
-    
-        bool isLearnBg; // 背景学習中かどうか
+        ofxCv::FlowFarneback farneback;
+        ofxCv::Flow* curFlow; //密なオプティカルフロー
+        ofxCv::FlowPyrLK pyrLk; //疎なオブティカルフロー
     
         // 画像
         ofImage bgImg; //背景画像
         ofImage diffImg; //差分画像
+        ofImage prev1Img; //1つ前の画像
+        ofImage prev2Img; //2つ前の画像
+        ofImage prev3Img; //3つ前の画像
     
         //GUI
         ofxPanel gui;
-    
+        ofxIntSlider medianScale;
+        ofxFloatSlider minArea;
+        ofxFloatSlider maxArea;
+        ofxFloatSlider flowScale;
+        ofxFloatSlider pyrScale;
+        ofxIntSlider levels;
+        ofxIntSlider winSize;
+        ofxIntSlider maxLevel;
+        ofxIntSlider iterations;
+        ofxIntSlider polyN;
+        ofxFloatSlider polySigma;
         ofxFloatSlider bgThresh; //2値化閾値制御
         ofxFloatSlider contourThresh; //輪郭閾値制御
+        ofxFloatSlider qualityLevel;
+        ofxFloatSlider minDistance;
     
         ofxButton resetBackgroundButton;
         ofxButton fullScreenToggle;
@@ -55,6 +71,9 @@ class ofApp : public ofBaseApp{
         ofxToggle bgFlag;
         ofxToggle cameraFlag;
         ofxToggle guiFlag;
+        ofxToggle learnBgFlag;
+        ofxToggle useFarneback;
+        ofxToggle OPTFLOW_FARNEBACK_GAUSSIAN;
     
         //ボタンの動作
         void resetBackgroundPressed();
@@ -65,4 +84,5 @@ class ofApp : public ofBaseApp{
         void sendContourPosition();
         void sendFlowVector();
         void dumpOSC(ofxOscMessage m);
+        int oscCount;
 };

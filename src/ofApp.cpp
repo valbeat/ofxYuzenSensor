@@ -18,7 +18,7 @@ void ofApp::setup(){
     #ifdef _USE_LIVE_VIDEO
         camera.listDevices();
         camera.setVerbose(true);
-        camera.setDeviceID(0);
+        camera.setDeviceID(1);
         camera.initGrabber(camWidth,camHeight);
     #else
         //video.loadMovie();
@@ -26,28 +26,42 @@ void ofApp::setup(){
     #endif
     
 
-    //輪郭の設定
-    contourFinder.setMinAreaRadius(10);
-    contourFinder.setMaxAreaRadius(200);
+
     
     //背景の学習を設定
     background.setLearningTime(900);
     background.setThresholdValue(20);
-    isLearnBg = true;
+
     
     //ボタンの動作設定
     resetBackgroundButton.addListener(this, &ofApp::resetBackgroundPressed);
     
     //GUIの設定
     gui.setup();
+    gui.add(minArea.setup("Min Area", 0, 0, 1));
+    gui.add(maxArea.setup("Max Area", 1, 0, 1));
+    gui.add(medianScale.setup("median Blur Size", 1, 0, 50));
     gui.add(bgThresh.setup("background thresh", 50, 0, 100));
     gui.add(contourThresh.setup("contour finder thresh", 500, 0, 1000));
     gui.add(resetBackgroundButton.setup("reset background"));
-    gui.add(fullScreenToggle.setup("full screen"));
+    gui.add(learnBgFlag.setup("gui",true));
     gui.add(diffFlag.setup("diff image",true));
     gui.add(contourFlag.setup("contour image",true));
     gui.add(bgFlag.setup("background image",false));
     gui.add(cameraFlag.setup("camera image",true));
+    //    gui.add(flowScale.setup("flowScale", 0.05, 0.0, 1.0));
+    //    gui.add(pyrScale.setup("pyrScale", 0.5, 0, 1));
+    //    gui.add(levels.setup("levels", 4, 1, 8));
+    //    gui.add(winSize.setup("winsize", 8, 4, 64));
+    //    gui.add(iterations.setup("iterations", 2, 1, 8));
+    //    gui.add(polyN.setup("polyN", 7, 5, 10));
+    //    gui.add(polySigma.setup("polySigma", 1.5, 1.1, 2));
+    //    gui.add(OPTFLOW_FARNEBACK_GAUSSIAN.setup("OPTFLOW_FARNEBACK_GAUSSIAN",false));
+    //    gui.add(useFarneback.setup("use Farnback",true));
+    //    gui.add(qualityLevel.setup("quality level", 0.01, 0.001, 0.02));
+    //    gui.add(maxLevel.setup("max level", 3,0,8));
+    //    gui.add(minDistance.setup("minDistance", 4, 1, 16));
+    gui.add(fullScreenToggle.setup("full screen"));
     gui.add(guiFlag.setup("gui",true));
 }
 
@@ -55,12 +69,26 @@ void ofApp::setup(){
 void ofApp::update(){
     camera.update();
     if(camera.isFrameNew()) {
-        background.setThresholdValue(bgThresh);
-        background.update(camera, diffImg);
-        diffImg.update();
+        ofxCv::medianBlur(camera, camera, medianScale); //ノイズがあるので平滑化
+        if (learnBgFlag) {
+            // 背景差分を取る
+            background.setThresholdValue(bgThresh);
+            background.update(camera, diffImg);
+            diffImg.update();
+        } else {
+            // フレーム差分を取る
+            
+        }
+        //輪郭の設定
         contourFinder.setThreshold(contourThresh);
+        contourFinder.setMinAreaRadius(10);
+        contourFinder.setMaxAreaRadius(100);
+        contourFinder.setMinArea(minArea * camWidth * camHeight);
+        contourFinder.setMaxArea(maxArea * camWidth * camHeight);
         contourFinder.findContours(diffImg);
         sendContourPosition();
+        
+        
     }
     
 }
@@ -82,7 +110,9 @@ void ofApp::draw(){
         ofSetColor(0, 255, 255);
         contourFinder.draw();
     }
-    gui.draw();
+    if (guiFlag) {
+        gui.draw();
+    }
 }
 
 //--------------------------------------------------------------
@@ -176,8 +206,10 @@ void ofApp::sendContourPosition() {
         m.addIntArg(x);
         m.addIntArg(y);
         m.addIntArg(z);
+        m.addIntArg(oscCount);
         sender.sendMessage(m);
         dumpOSC(m);
+        oscCount++;
     }
 }
 //--------------------------------------------------------------
