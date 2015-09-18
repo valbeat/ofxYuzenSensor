@@ -62,5 +62,7 @@ class ofApp : public ofBaseApp{
     
     private:
         ofxOscSender sender;
-
+        void sendContourPosition();
+        void sendFlowVector();
+        void dumpOSC(ofxOscMessage m);
 };

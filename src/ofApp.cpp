@@ -60,32 +60,7 @@ void ofApp::update(){
         diffImg.update();
         contourFinder.setThreshold(contourThresh);
         contourFinder.findContours(diffImg);
-        float x,y,z;
-        for (int i = 0; i < contourFinder.size(); i++) {
-            x = contourFinder.getBoundingRect(i).x;
-            y = contourFinder.getBoundingRect(i).y;
-            z = contourFinder.getBoundingRect(i).area();
-            z = z / 1000;
-            ofxOscMessage m;
-            m.setAddress( "/user" );
-            m.addIntArg(i);
-            m.addIntArg(x);
-            m.addIntArg(y);
-            m.addIntArg(z);
-            sender.sendMessage(m);
-            String msg_string;
-            msg_string = m.getAddress();
-            for (int i=0; i<m.getNumArgs(); i++ ) {
-                msg_string += " ";
-                if(m.getArgType(i) == OFXOSC_TYPE_INT32)
-                    msg_string += ofToString( m.getArgAsInt32(i));
-                else if(m.getArgType(i) == OFXOSC_TYPE_FLOAT)
-                    msg_string += ofToString( m.getArgAsFloat(i));
-                else if(m.getArgType(i) == OFXOSC_TYPE_STRING)
-                    msg_string += m.getArgAsString(i);
-            }
-            cout << msg_string << endl;
-        }
+        sendContourPosition();
     }
     
 }
@@ -171,4 +146,42 @@ void ofApp::resetBackgroundPressed() {
 //--------------------------------------------------------------
 void ofApp::toggleFullScreenPressed() {
     ofToggleFullscreen();
+}
+//--------------------------------------------------------------
+void ofApp::dumpOSC(ofxOscMessage m) {
+    String msg_string;
+    msg_string = m.getAddress();
+    for (int i=0; i<m.getNumArgs(); i++ ) {
+        msg_string += " ";
+        if(m.getArgType(i) == OFXOSC_TYPE_INT32)
+            msg_string += ofToString( m.getArgAsInt32(i));
+            else if(m.getArgType(i) == OFXOSC_TYPE_FLOAT)
+                msg_string += ofToString( m.getArgAsFloat(i));
+                else if(m.getArgType(i) == OFXOSC_TYPE_STRING)
+                    msg_string += m.getArgAsString(i);
+                    }
+    cout << msg_string << endl;
+}
+//--------------------------------------------------------------
+void ofApp::sendContourPosition() {
+    float x,y,z;
+    for (int i = 0; i < contourFinder.size(); i++) {
+        x = contourFinder.getBoundingRect(i).x;
+        y = contourFinder.getBoundingRect(i).y;
+        z = contourFinder.getBoundingRect(i).area();
+        z = z / 1000;
+        ofxOscMessage m;
+        m.setAddress( "/user/position" );
+        m.addIntArg(i);
+        m.addIntArg(x);
+        m.addIntArg(y);
+        m.addIntArg(z);
+        sender.sendMessage(m);
+        dumpOSC(m);
+    }
+}
+//--------------------------------------------------------------
+void ofApp::sendFlowVector(){
+    // TODO:flowベクターを送る
+    
 }
