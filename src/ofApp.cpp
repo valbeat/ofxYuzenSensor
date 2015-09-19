@@ -40,13 +40,13 @@ void ofApp::setup(){
     
     //GUIの設定
     gui.setup();
-    gui.add(minRad.setup("Min Area", 10, 0, 100));
-    gui.add(maxRad.setup("Max Area", 100, 0, 1000));
-    gui.add(minArea.setup("Min Area", 0, 0, 1));
+    gui.add(minRad.setup("Min Rad", 10, 0, 100));
+    gui.add(maxRad.setup("Max Rad", 100, 0, 1000));
+    gui.add(minArea.setup("Min Area", 0.01, 0, 0.1));
     gui.add(maxArea.setup("Max Area", 1, 0, 1));
-    gui.add(medianScale.setup("median Blur Size", 1, 0, 50));
-    gui.add(bgThresh.setup("background thresh", 50, 0, 100));
-    gui.add(contourThresh.setup("contour finder thresh", 500, 0, 1000));
+    gui.add(medianScale.setup("median Blur Size", 7, 0, 50));
+    gui.add(bgThresh.setup("background thresh", 80, 0, 250));
+    gui.add(contourThresh.setup("contour finder thresh", 10, 0, 250));
     gui.add(resetBackgroundButton.setup("reset background"));
     gui.add(learnBgFlag.setup("gui",true));
     gui.add(diffFlag.setup("diff image",true));
@@ -202,11 +202,12 @@ void ofApp::sendContourPosition() {
     RectTracker tracker = contourFinder.getTracker();
     float x,y,z;
     for (int i = 0; i < contourFinder.size(); i++) {
-        // TODO:座標を重心に設定する
-        x = contourFinder.getBoundingRect(i).x;
-        y = contourFinder.getBoundingRect(i).y;
+        // 座標を重心に設定する
+        cv::Rect rect = contourFinder.getBoundingRect(i);
+        float x = (rect.x + rect.x + rect.width)/2;
+        float y = (rect.y + rect.y + rect.height)/2;
         // z方向は面積から取得
-        z = contourFinder.getBoundingRect(i).area();
+        z = rect.area();
         z = z / 1000;
         ofxOscMessage m;
         m.setAddress( "/user/position" );
