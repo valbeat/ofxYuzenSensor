@@ -12,13 +12,15 @@ void ofApp::setup(){
     
     sender.setup(HOST, PORT);
     
+    ofToggleFullscreen();
+    
     camWidth = ofGetWidth();
     camHeight = ofGetHeight();
     
     #ifdef _USE_LIVE_VIDEO
         camera.listDevices();
         camera.setVerbose(true);
-        camera.setDeviceID(1);
+        camera.setDeviceID(0);
         camera.initGrabber(camWidth,camHeight);
     #else
         //video.loadMovie();
@@ -38,6 +40,8 @@ void ofApp::setup(){
     
     //GUIの設定
     gui.setup();
+    gui.add(minRad.setup("Min Area", 10, 0, 100));
+    gui.add(maxRad.setup("Max Area", 100, 0, 1000));
     gui.add(minArea.setup("Min Area", 0, 0, 1));
     gui.add(maxArea.setup("Max Area", 1, 0, 1));
     gui.add(medianScale.setup("median Blur Size", 1, 0, 50));
@@ -61,8 +65,9 @@ void ofApp::setup(){
     //    gui.add(qualityLevel.setup("quality level", 0.01, 0.001, 0.02));
     //    gui.add(maxLevel.setup("max level", 3,0,8));
     //    gui.add(minDistance.setup("minDistance", 4, 1, 16));
-    gui.add(fullScreenToggle.setup("full screen"));
+    gui.add(fullScreenToggle.setup("full screen",true));
     gui.add(guiFlag.setup("gui",true));
+
 }
 
 //--------------------------------------------------------------
@@ -81,10 +86,10 @@ void ofApp::update(){
         }
         //輪郭の設定
         contourFinder.setThreshold(contourThresh);
-        contourFinder.setMinAreaRadius(10);
-        contourFinder.setMaxAreaRadius(100);
-        contourFinder.setMinArea(minArea * camWidth * camHeight);
-        contourFinder.setMaxArea(maxArea * camWidth * camHeight);
+        contourFinder.setMinAreaRadius(minRad);
+        contourFinder.setMaxAreaRadius(maxRad);
+        contourFinder.setMinArea(minArea * minArea * camWidth * camHeight);
+        contourFinder.setMaxArea(maxArea * maxArea * camWidth * camHeight);
         contourFinder.findContours(diffImg);
         sendContourPosition();
         
@@ -104,7 +109,7 @@ void ofApp::draw(){
     }
     if (diffFlag) {
         ofSetColor(255);
-        diffImg.draw(0,0);
+        diffImg.draw(0, 0, camWidth, camHeight);
     }
     if (contourFlag) {
         ofSetColor(0, 255, 255);
@@ -194,10 +199,13 @@ void ofApp::dumpOSC(ofxOscMessage m) {
 }
 //--------------------------------------------------------------
 void ofApp::sendContourPosition() {
+    RectTracker tracker = contourFinder.getTracker();
     float x,y,z;
     for (int i = 0; i < contourFinder.size(); i++) {
+        // TODO:座標を重心に設定する
         x = contourFinder.getBoundingRect(i).x;
         y = contourFinder.getBoundingRect(i).y;
+        // z方向は面積から取得
         z = contourFinder.getBoundingRect(i).area();
         z = z / 1000;
         ofxOscMessage m;

@@ -48,6 +48,8 @@ class ofApp : public ofBaseApp{
         //GUI
         ofxPanel gui;
         ofxIntSlider medianScale;
+        ofxFloatSlider minRad;
+        ofxFloatSlider maxRad;
         ofxFloatSlider minArea;
         ofxFloatSlider maxArea;
         ofxFloatSlider flowScale;
@@ -78,6 +80,7 @@ class ofApp : public ofBaseApp{
         //ボタンの動作
         void resetBackgroundPressed();
         void toggleFullScreenPressed();
+
     
     private:
         ofxOscSender sender;

@@ -1,0 +1,13 @@
+<group>
+	<Min_Area>15</Min_Area>
+	<Max_Area>210</Max_Area>
+	<median_Blur_Size>50</median_Blur_Size>
+	<background_thresh>15.5</background_thresh>
+	<contour_finder_thresh>95</contour_finder_thresh>
+	<gui>1</gui>
+	<diff_image>0</diff_image>
+	<contour_image>1</contour_image>
+	<background_image>0</background_image>
+	<camera_image>1</camera_image>
+<group/>
+</group>
