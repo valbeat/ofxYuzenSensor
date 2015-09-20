@@ -265,6 +265,11 @@ void ofApp::sendContourPosition() {
 //--------------------------------------------------------------
 void ofApp::sendFlowVector(){
     // TODO:flowベクターを送る
-    
+    ofxOscMessage m;
+    m.setAddress("/user/flow");
+    m.addIntArg(oscCount);
+    sender.sendMessage(m);
+    dumpOSC(m);
+    oscCount++;
     
 }
