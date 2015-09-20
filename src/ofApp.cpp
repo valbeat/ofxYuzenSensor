@@ -53,18 +53,18 @@ void ofApp::setup(){
     gui.add(contourFlag.setup("contour image",true));
     gui.add(bgFlag.setup("background image",false));
     gui.add(cameraFlag.setup("camera image",true));
-    //    gui.add(flowScale.setup("flowScale", 0.05, 0.0, 1.0));
-    //    gui.add(pyrScale.setup("pyrScale", 0.5, 0, 1));
-    //    gui.add(levels.setup("levels", 4, 1, 8));
-    //    gui.add(winSize.setup("winsize", 8, 4, 64));
-    //    gui.add(iterations.setup("iterations", 2, 1, 8));
-    //    gui.add(polyN.setup("polyN", 7, 5, 10));
-    //    gui.add(polySigma.setup("polySigma", 1.5, 1.1, 2));
-    //    gui.add(OPTFLOW_FARNEBACK_GAUSSIAN.setup("OPTFLOW_FARNEBACK_GAUSSIAN",false));
-    //    gui.add(useFarneback.setup("use Farnback",true));
-    //    gui.add(qualityLevel.setup("quality level", 0.01, 0.001, 0.02));
-    //    gui.add(maxLevel.setup("max level", 3,0,8));
-    //    gui.add(minDistance.setup("minDistance", 4, 1, 16));
+    gui.add(flowScale.setup("flowScale", 0.05, 0.0, 1.0));
+    gui.add(pyrScale.setup("pyrScale", 0.5, 0, 1));
+    gui.add(levels.setup("levels", 4, 1, 8));
+    gui.add(winSize.setup("winsize", 8, 4, 64));
+    gui.add(iterations.setup("iterations", 2, 1, 8));
+    gui.add(polyN.setup("polyN", 7, 5, 10));
+    gui.add(polySigma.setup("polySigma", 1.5, 1.1, 2));
+    gui.add(OPTFLOW_FARNEBACK_GAUSSIAN.setup("OPTFLOW_FARNEBACK_GAUSSIAN",false));
+    gui.add(useFarneback.setup("use Farnback",true));
+    gui.add(qualityLevel.setup("quality level", 0.01, 0.001, 0.02));
+    gui.add(maxLevel.setup("max level", 3,0,8));
+    gui.add(minDistance.setup("minDistance", 4, 1, 16));
     gui.add(fullScreenToggle.setup("full screen",true));
     gui.add(guiFlag.setup("gui",true));
 
@@ -85,6 +85,7 @@ void ofApp::update(){
             
         }
         //輪郭の設定
+        contourFinder.setSortBySize(true);
         contourFinder.setThreshold(contourThresh);
         contourFinder.setMinAreaRadius(minRad);
         contourFinder.setMaxAreaRadius(maxRad);
@@ -190,11 +191,11 @@ void ofApp::dumpOSC(ofxOscMessage m) {
         msg_string += " ";
         if(m.getArgType(i) == OFXOSC_TYPE_INT32)
             msg_string += ofToString( m.getArgAsInt32(i));
-            else if(m.getArgType(i) == OFXOSC_TYPE_FLOAT)
-                msg_string += ofToString( m.getArgAsFloat(i));
-                else if(m.getArgType(i) == OFXOSC_TYPE_STRING)
-                    msg_string += m.getArgAsString(i);
-                    }
+        else if(m.getArgType(i) == OFXOSC_TYPE_FLOAT)
+            msg_string += ofToString( m.getArgAsFloat(i));
+        else if(m.getArgType(i) == OFXOSC_TYPE_STRING)
+            msg_string += m.getArgAsString(i);
+    }
     cout << msg_string << endl;
 }
 //--------------------------------------------------------------
@@ -202,7 +203,7 @@ void ofApp::sendContourPosition() {
     RectTracker tracker = contourFinder.getTracker();
     float x,y,z;
     for (int i = 0; i < contourFinder.size(); i++) {
-        // 座標を重心に設定する
+        // 座標を重心に設定する TODO:centroidを使えばok
         cv::Rect rect = contourFinder.getBoundingRect(i);
         float x = (rect.x + rect.x + rect.width)/2;
         float y = (rect.y + rect.y + rect.height)/2;
@@ -210,7 +211,7 @@ void ofApp::sendContourPosition() {
         z = rect.area();
         z = z / 1000;
         ofxOscMessage m;
-        m.setAddress( "/user/position" );
+        m.setAddress("/user/position");
         m.addIntArg(i);
         m.addIntArg(x);
         m.addIntArg(y);

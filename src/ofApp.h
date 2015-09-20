@@ -47,27 +47,6 @@ class ofApp : public ofBaseApp{
     
         //GUI
         ofxPanel gui;
-        ofxIntSlider medianScale;
-        ofxFloatSlider minRad;
-        ofxFloatSlider maxRad;
-        ofxFloatSlider minArea;
-        ofxFloatSlider maxArea;
-        ofxFloatSlider flowScale;
-        ofxFloatSlider pyrScale;
-        ofxIntSlider levels;
-        ofxIntSlider winSize;
-        ofxIntSlider maxLevel;
-        ofxIntSlider iterations;
-        ofxIntSlider polyN;
-        ofxFloatSlider polySigma;
-        ofxFloatSlider bgThresh; //2値化閾値制御
-        ofxFloatSlider contourThresh; //輪郭閾値制御
-        ofxFloatSlider qualityLevel;
-        ofxFloatSlider minDistance;
-    
-        ofxButton resetBackgroundButton;
-        ofxButton fullScreenToggle;
-    
         ofxToggle diffFlag;
         ofxToggle contourFlag;
         ofxToggle bgFlag;
@@ -76,7 +55,30 @@ class ofApp : public ofBaseApp{
         ofxToggle learnBgFlag;
         ofxToggle useFarneback;
         ofxToggle OPTFLOW_FARNEBACK_GAUSSIAN;
-    
+        // median filter
+        ofxIntSlider medianScale; // メディアンフィルタのぼかしの大きさ
+        // contourFinder
+        ofxFloatSlider minRad; // 最小半径
+        ofxFloatSlider maxRad; // 最大半径
+        ofxFloatSlider minArea; // 最小面積比率
+        ofxFloatSlider maxArea; // 最大面積比率
+        ofxFloatSlider contourThresh; //輪郭閾値制御
+        // optical flow
+        ofxFloatSlider flowScale;
+        ofxFloatSlider pyrScale;
+        ofxIntSlider levels;
+        ofxIntSlider winSize;
+        ofxIntSlider maxLevel;
+        ofxIntSlider iterations;
+        ofxIntSlider polyN;
+        ofxFloatSlider polySigma;
+        ofxFloatSlider qualityLevel;
+        ofxFloatSlider minDistance;
+        // basic
+        ofxFloatSlider bgThresh; //2値化閾値制御
+        ofxButton resetBackgroundButton;
+        ofxButton fullScreenToggle;
+
         //ボタンの動作
         void resetBackgroundPressed();
         void toggleFullScreenPressed();
