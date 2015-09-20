@@ -23,8 +23,8 @@ void ofApp::setup(){
         camera.setDeviceID(0);
         camera.initGrabber(camWidth,camHeight);
     #else
-        //video.loadMovie();
-        //video.play();
+        video.loadMovie("cv_incam.mov");
+        video.play();
     #endif
     
     //背景の学習を設定
@@ -86,6 +86,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    #ifdef _USE_LIVE_VIDEO
     camera.update();
     if(camera.isFrameNew()) {
         ofxCv::medianBlur(camera, camera, medianScale); //ノイズがあるので平滑化
@@ -133,6 +134,8 @@ void ofApp::update(){
         
 
     }
+    #else
+    #endif
     
 }
 //--------------------------------------------------------------
@@ -140,13 +143,14 @@ void ofApp::draw(){
     ofNoFill();
     
     if (cameraFlag) {
+        ofSetColor(255);
         camera.draw(0, 0, camWidth, camHeight);
     }
     if (bgFlag) {
         bgImg.draw(0, 0, camWidth, camHeight);
     }
     if (diffFlag) {
-        ofSetColor(255);
+        ofSetColor(255,100);
         diffImg.draw(0, 0, camWidth, camHeight);
     }
     if (contourFlag) {
@@ -261,6 +265,7 @@ void ofApp::sendContourPosition() {
 //        m.addIntArg(oscCount);
         sender.sendMessage(m);
         dumpOSC(m);
+        oscPositionCount++;
         oscCount++;
     }
 }
@@ -273,6 +278,7 @@ void ofApp::sendFlowVector(){
     m.addIntArg(oscCount);
     sender.sendMessage(m);
     dumpOSC(m);
+    oscFlowCount;
     oscCount++;
     
 }

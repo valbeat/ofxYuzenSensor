@@ -28,6 +28,7 @@ class ofApp : public ofBaseApp{
 
         //カメラ
         ofVideoGrabber camera;
+        ofVideoPlayer video;
         int camWidth;
         int camHeight;
     
@@ -92,5 +93,5 @@ class ofApp : public ofBaseApp{
         void sendOpticalFlow();
         void sendFlowVector();
         void dumpOSC(ofxOscMessage m);
-        int oscCount;
+        int oscCount,oscPositionCount,oscFlowCount;
 };
