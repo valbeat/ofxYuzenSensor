@@ -27,9 +27,6 @@ void ofApp::setup(){
         //video.play();
     #endif
     
-
-
-    
     //背景の学習を設定
     background.setLearningTime(900);
     background.setThresholdValue(20);
@@ -40,20 +37,23 @@ void ofApp::setup(){
     
     //GUIの設定
     gui.setup();
+    gui.add(*new ofParameter<String>(""));
+    gui.add(medianScale.setup("median Blur Size", 7, 0, 50));
+    
+    gui.add(*new ofParameter<String>(""));
+    gui.add(learnBgFlag.setup("Learn BG", true));
+    gui.add(bgThresh.setup("background thresh", 80, 0, 250));
+    gui.add(resetBackgroundButton.setup("reset background"));
+    
+    gui.add(*new ofParameter<String>(""));
+    gui.add(contourThresh.setup("contour finder thresh", 10, 0, 250));
     gui.add(minRad.setup("Min Rad", 10, 0, 100));
     gui.add(maxRad.setup("Max Rad", 100, 0, 1000));
     gui.add(minArea.setup("Min Area", 0.01, 0, 0.1));
     gui.add(maxArea.setup("Max Area", 1, 0, 1));
-    gui.add(medianScale.setup("median Blur Size", 7, 0, 50));
-    gui.add(bgThresh.setup("background thresh", 80, 0, 250));
-    gui.add(contourThresh.setup("contour finder thresh", 10, 0, 250));
-    gui.add(resetBackgroundButton.setup("reset background"));
-    gui.add(learnBgFlag.setup("gui",true));
-    gui.add(diffFlag.setup("diff image",true));
-    gui.add(contourFlag.setup("contour image",true));
-    gui.add(bgFlag.setup("background image",false));
-    gui.add(cameraFlag.setup("camera image",true));
-    gui.add(flowScale.setup("flowScale", 0.05, 0.0, 1.0));
+    
+    gui.add(*new ofParameter<String>(""));
+    gui.add(useFarneback.setup("use Farnback",true));
     gui.add(pyrScale.setup("pyrScale", 0.5, 0, 1));
     gui.add(levels.setup("levels", 4, 1, 8));
     gui.add(winSize.setup("winsize", 8, 4, 64));
@@ -61,10 +61,22 @@ void ofApp::setup(){
     gui.add(polyN.setup("polyN", 7, 5, 10));
     gui.add(polySigma.setup("polySigma", 1.5, 1.1, 2));
     gui.add(OPTFLOW_FARNEBACK_GAUSSIAN.setup("OPTFLOW_FARNEBACK_GAUSSIAN",false));
-    gui.add(useFarneback.setup("use Farnback",true));
+    gui.add(flowScale.setup("flowScale", 0.05, 0.0, 1.0));
+    
+    gui.add(*new ofParameter<String>(""));
     gui.add(qualityLevel.setup("quality level", 0.01, 0.001, 0.02));
     gui.add(maxLevel.setup("max level", 3,0,8));
+    gui.add(maxFeatures.setup("max features", 200,1,1000));
     gui.add(minDistance.setup("minDistance", 4, 1, 16));
+    
+    gui.add(*new ofParameter<String>(""));
+    gui.add(cameraFlag.setup("camera image",true));
+    gui.add(diffFlag.setup("diff image",true));
+    gui.add(contourFlag.setup("contour image",true));
+    gui.add(flowFlag.setup("flow image",true));
+    gui.add(bgFlag.setup("background image",false));
+    
+    gui.add(*new ofParameter<String>(""));
     gui.add(fullScreenToggle.setup("full screen",true));
     gui.add(guiFlag.setup("gui",true));
 
@@ -84,6 +96,7 @@ void ofApp::update(){
             // フレーム差分を取る
             
         }
+        
         //輪郭の設定
         contourFinder.setSortBySize(true);
         contourFinder.setThreshold(contourThresh);
@@ -93,8 +106,28 @@ void ofApp::update(){
         contourFinder.setMaxArea(maxArea * maxArea * camWidth * camHeight);
         contourFinder.findContours(diffImg);
         sendContourPosition();
+
+//        if (useFarneback) {
+//            //密なオプティカルフロー
+//            curFlow = &farneback;
+//            farneback.setPyramidScale(pyrScale);
+//            farneback.setNumLevels(levels);
+//            farneback.setWindowSize(winSize);
+//            farneback.setNumIterations(iterations);
+//            farneback.setPolySigma(polySigma);
+//            farneback.setUseGaussian(OPTFLOW_FARNEBACK_GAUSSIAN);
+//        } else {
+//            //疎なオプティカルフロー
+//            curFlow = &pyrLk;
+//            pyrLk.setMaxFeatures(maxFeatures);
+//            pyrLk.setQualityLevel(qualityLevel);
+//            pyrLk.setMinDistance(minDistance);
+//            pyrLk.setWindowSize(winSize);
+//            pyrLk.setMaxLevel(maxLevel);
+//        }
         
-        
+        // オプティカルフローを計算
+//        curFlow->calcOpticalFlow(camera);
     }
     
 }
@@ -118,6 +151,9 @@ void ofApp::draw(){
     }
     if (guiFlag) {
         gui.draw();
+    }
+    if (flowFlag) {
+//        curFlow->draw(0, 0, ofGetWidth(), ofGetHeight());
     }
 }
 

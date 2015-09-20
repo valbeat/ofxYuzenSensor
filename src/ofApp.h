@@ -51,6 +51,7 @@ class ofApp : public ofBaseApp{
         ofxToggle contourFlag;
         ofxToggle bgFlag;
         ofxToggle cameraFlag;
+        ofxToggle flowFlag;
         ofxToggle guiFlag;
         ofxToggle learnBgFlag;
         ofxToggle useFarneback;
@@ -66,12 +67,13 @@ class ofApp : public ofBaseApp{
         // optical flow
         ofxFloatSlider flowScale;
         ofxFloatSlider pyrScale;
-        ofxIntSlider levels;
-        ofxIntSlider winSize;
-        ofxIntSlider maxLevel;
         ofxIntSlider iterations;
         ofxIntSlider polyN;
+        ofxIntSlider winSize;
+        ofxIntSlider levels;
+        ofxIntSlider maxLevel;
         ofxFloatSlider polySigma;
+        ofxFloatSlider maxFeatures;
         ofxFloatSlider qualityLevel;
         ofxFloatSlider minDistance;
         // basic
