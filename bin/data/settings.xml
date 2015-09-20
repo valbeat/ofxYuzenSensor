@@ -1,13 +1,72 @@
 <group>
-	<UnknownName/>
-	<median_Blur_Size>50</median_Blur_Size>
+	<UnknownName>
+	
+	
+	50
+	1
+	80
+	10
+	100
+	475
+	0.0175
+	1
+	1
+	0.5
+	4
+	64
+	1
+	7
+	1.5
+	0
+	0.05
+	0.01
+	3
+	200
+	4
+	1
+	0
+	1
+	1
+	0
+	1
+
+	50
+	1
+	80
+	10
+	100
+	475
+	0.0175
+	1
+	1
+	0.5
+	4
+	64
+	1
+	7
+	1.5
+	0
+	0.05
+	0.01
+	3
+	200
+	4
+	1
+	1
+	1
+	0
+	0
+	1
+
+</UnknownName>
+	<median_Blur_Size>16</median_Blur_Size>
 	<Learn_BG>1</Learn_BG>
-	<background_thresh>80</background_thresh>
+	<background_thresh>40</background_thresh>
 	<contour_finder_thresh>10</contour_finder_thresh>
-	<Min_Rad>100</Min_Rad>
-	<Max_Rad>475</Max_Rad>
-	<Min_Area>0.0175</Min_Area>
-	<Max_Area>1</Max_Area>
+	<Min_Rad>12</Min_Rad>
+	<Max_Rad>200</Max_Rad>
+	<Min_Area>0.023</Min_Area>
+	<Max_Area>0.31</Max_Area>
 	<use_Farnback>1</use_Farnback>
 	<pyrScale>0.5</pyrScale>
 	<levels>4</levels>
@@ -24,7 +83,8 @@
 	<camera_image>1</camera_image>
 	<diff_image>0</diff_image>
 	<contour_image>1</contour_image>
-	<flow_image>1</flow_image>
+	<flow_image>0</flow_image>
 	<background_image>0</background_image>
 	<gui>1</gui>
+<group/>
 </group>

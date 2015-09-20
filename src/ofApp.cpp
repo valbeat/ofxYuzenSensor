@@ -107,26 +107,28 @@ void ofApp::update(){
         contourFinder.setMaxArea(maxArea * maxArea * camWidth * camHeight);
         contourFinder.findContours(diffImg);
         sendContourPosition();
-
-        if (useFarneback) {
-            //密なオプティカルフロー
-            curFlow = &farneback;
-            farneback.setPyramidScale(pyrScale);
-            farneback.setNumLevels(levels);
-            farneback.setWindowSize(winSize);
-            farneback.setNumIterations(iterations);
-            farneback.setPolySigma(polySigma);
-            farneback.setUseGaussian(OPTFLOW_FARNEBACK_GAUSSIAN);
-            farneback.calcOpticalFlow(camera);
-        } else {
-            //疎なオプティカルフロー
-            curFlow = &pyrLk;
-            pyrLk.setMaxFeatures(maxFeatures);
-            pyrLk.setQualityLevel(qualityLevel);
-            pyrLk.setMinDistance(minDistance);
-            pyrLk.setWindowSize(winSize);
-            pyrLk.setMaxLevel(maxLevel);
-            pyrLk.calcOpticalFlow(camera);
+        
+        if(flowFlag) {
+            if (useFarneback) {
+                //密なオプティカルフロー
+                curFlow = &farneback;
+                farneback.setPyramidScale(pyrScale);
+                farneback.setNumLevels(levels);
+                farneback.setWindowSize(winSize);
+                farneback.setNumIterations(iterations);
+                farneback.setPolySigma(polySigma);
+                farneback.setUseGaussian(OPTFLOW_FARNEBACK_GAUSSIAN);
+                farneback.calcOpticalFlow(camera);
+            } else {
+                //疎なオプティカルフロー
+                curFlow = &pyrLk;
+                pyrLk.setMaxFeatures(maxFeatures);
+                pyrLk.setQualityLevel(qualityLevel);
+                pyrLk.setMinDistance(minDistance);
+                pyrLk.setWindowSize(winSize);
+                pyrLk.setMaxLevel(maxLevel);
+                pyrLk.calcOpticalFlow(camera);
+            }
         }
         
 
@@ -148,13 +150,14 @@ void ofApp::draw(){
         diffImg.draw(0, 0, camWidth, camHeight);
     }
     if (contourFlag) {
-        ofSetColor(255);
+        ofSetColor(100,255,255);
         contourFinder.draw();
     }
     if (guiFlag) {
         gui.draw();
     }
     if (flowFlag) {
+        ofSetColor(255);
         if (useFarneback) farneback.draw(0, 0, camWidth, camHeight);
         else pyrLk.draw(0, 0, camWidth, camHeight);
     }
@@ -248,15 +251,14 @@ void ofApp::sendContourPosition() {
         float x = (rect.x + rect.x + rect.width)/2;
         float y = (rect.y + rect.y + rect.height)/2;
         // z方向は面積から取得
-        z = rect.area();
-        z = z / 1000;
+        float area = rect.area();
         ofxOscMessage m;
         m.setAddress("/user/position");
-        m.addIntArg(i);
+        m.addIntArg(contourFinder.getLabel(i));
         m.addIntArg(x);
         m.addIntArg(y);
-        m.addIntArg(z);
-        m.addIntArg(oscCount);
+        m.addIntArg(area);
+//        m.addIntArg(oscCount);
         sender.sendMessage(m);
         dumpOSC(m);
         oscCount++;
@@ -265,6 +267,7 @@ void ofApp::sendContourPosition() {
 //--------------------------------------------------------------
 void ofApp::sendFlowVector(){
     // TODO:flowベクターを送る
+    
     ofxOscMessage m;
     m.setAddress("/user/flow");
     m.addIntArg(oscCount);
