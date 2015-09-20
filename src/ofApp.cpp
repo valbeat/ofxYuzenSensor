@@ -79,6 +79,8 @@ void ofApp::setup(){
     gui.add(*new ofParameter<String>(""));
     gui.add(fullScreenToggle.setup("full screen",true));
     gui.add(guiFlag.setup("gui",true));
+    
+    gui.loadFromFile("settings.xml");
 
 }
 
@@ -96,7 +98,6 @@ void ofApp::update(){
             // フレーム差分を取る
             
         }
-        
         //輪郭の設定
         contourFinder.setSortBySize(true);
         contourFinder.setThreshold(contourThresh);
@@ -107,27 +108,28 @@ void ofApp::update(){
         contourFinder.findContours(diffImg);
         sendContourPosition();
 
-//        if (useFarneback) {
-//            //密なオプティカルフロー
-//            curFlow = &farneback;
-//            farneback.setPyramidScale(pyrScale);
-//            farneback.setNumLevels(levels);
-//            farneback.setWindowSize(winSize);
-//            farneback.setNumIterations(iterations);
-//            farneback.setPolySigma(polySigma);
-//            farneback.setUseGaussian(OPTFLOW_FARNEBACK_GAUSSIAN);
-//        } else {
-//            //疎なオプティカルフロー
-//            curFlow = &pyrLk;
-//            pyrLk.setMaxFeatures(maxFeatures);
-//            pyrLk.setQualityLevel(qualityLevel);
-//            pyrLk.setMinDistance(minDistance);
-//            pyrLk.setWindowSize(winSize);
-//            pyrLk.setMaxLevel(maxLevel);
-//        }
+        if (useFarneback) {
+            //密なオプティカルフロー
+            curFlow = &farneback;
+            farneback.setPyramidScale(pyrScale);
+            farneback.setNumLevels(levels);
+            farneback.setWindowSize(winSize);
+            farneback.setNumIterations(iterations);
+            farneback.setPolySigma(polySigma);
+            farneback.setUseGaussian(OPTFLOW_FARNEBACK_GAUSSIAN);
+            farneback.calcOpticalFlow(camera);
+        } else {
+            //疎なオプティカルフロー
+            curFlow = &pyrLk;
+            pyrLk.setMaxFeatures(maxFeatures);
+            pyrLk.setQualityLevel(qualityLevel);
+            pyrLk.setMinDistance(minDistance);
+            pyrLk.setWindowSize(winSize);
+            pyrLk.setMaxLevel(maxLevel);
+            pyrLk.calcOpticalFlow(camera);
+        }
         
-        // オプティカルフローを計算
-//        curFlow->calcOpticalFlow(camera);
+
     }
     
 }
@@ -146,14 +148,15 @@ void ofApp::draw(){
         diffImg.draw(0, 0, camWidth, camHeight);
     }
     if (contourFlag) {
-        ofSetColor(0, 255, 255);
+        ofSetColor(255);
         contourFinder.draw();
     }
     if (guiFlag) {
         gui.draw();
     }
     if (flowFlag) {
-//        curFlow->draw(0, 0, ofGetWidth(), ofGetHeight());
+        if (useFarneback) farneback.draw(0, 0, camWidth, camHeight);
+        else pyrLk.draw(0, 0, camWidth, camHeight);
     }
 }
 
@@ -168,6 +171,8 @@ void ofApp::keyPressed(int key){
             break;
         case 'g':
             (guiFlag == false) ? guiFlag = true : guiFlag = false;
+//        case 's':
+//            gui.saveToFile("settings.xml");
     }
 }
 
@@ -236,7 +241,6 @@ void ofApp::dumpOSC(ofxOscMessage m) {
 }
 //--------------------------------------------------------------
 void ofApp::sendContourPosition() {
-    RectTracker tracker = contourFinder.getTracker();
     float x,y,z;
     for (int i = 0; i < contourFinder.size(); i++) {
         // 座標を重心に設定する TODO:centroidを使えばok
@@ -261,5 +265,6 @@ void ofApp::sendContourPosition() {
 //--------------------------------------------------------------
 void ofApp::sendFlowVector(){
     // TODO:flowベクターを送る
+    
     
 }

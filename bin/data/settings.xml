@@ -1,13 +1,30 @@
 <group>
-	<Min_Area>15</Min_Area>
-	<Max_Area>210</Max_Area>
+	<UnknownName/>
 	<median_Blur_Size>50</median_Blur_Size>
-	<background_thresh>15.5</background_thresh>
-	<contour_finder_thresh>95</contour_finder_thresh>
-	<gui>1</gui>
+	<Learn_BG>1</Learn_BG>
+	<background_thresh>80</background_thresh>
+	<contour_finder_thresh>10</contour_finder_thresh>
+	<Min_Rad>100</Min_Rad>
+	<Max_Rad>475</Max_Rad>
+	<Min_Area>0.0175</Min_Area>
+	<Max_Area>1</Max_Area>
+	<use_Farnback>1</use_Farnback>
+	<pyrScale>0.5</pyrScale>
+	<levels>4</levels>
+	<winsize>64</winsize>
+	<iterations>1</iterations>
+	<polyN>7</polyN>
+	<polySigma>1.5</polySigma>
+	<OPTFLOW_FARNEBACK_GAUSSIAN>0</OPTFLOW_FARNEBACK_GAUSSIAN>
+	<flowScale>0.05</flowScale>
+	<quality_level>0.01</quality_level>
+	<max_level>3</max_level>
+	<max_features>200</max_features>
+	<minDistance>4</minDistance>
+	<camera_image>1</camera_image>
 	<diff_image>0</diff_image>
 	<contour_image>1</contour_image>
+	<flow_image>1</flow_image>
 	<background_image>0</background_image>
-	<camera_image>1</camera_image>
-<group/>
+	<gui>1</gui>
 </group>

@@ -34,8 +34,8 @@ class ofApp : public ofBaseApp{
         //OpenCV
         ofxCv::ContourFinder contourFinder; //輪郭抽出
         ofxCv::RunningBackground background; //背景
-        ofxCv::FlowFarneback farneback;
-        ofxCv::Flow* curFlow; //密なオプティカルフロー
+        ofxCv::Flow* curFlow;
+        ofxCv::FlowFarneback farneback;//密なオプティカルフロー
         ofxCv::FlowPyrLK pyrLk; //疎なオブティカルフロー
     
         // 画像
@@ -89,6 +89,7 @@ class ofApp : public ofBaseApp{
     private:
         ofxOscSender sender;
         void sendContourPosition();
+        void sendOpticalFlow();
         void sendFlowVector();
         void dumpOSC(ofxOscMessage m);
         int oscCount;
