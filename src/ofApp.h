@@ -55,8 +55,7 @@ class ofApp : public ofBaseApp{
         ofxToggle flowFlag;
         ofxToggle guiFlag;
         ofxToggle learnBgFlag;
-        ofxToggle useFarneback;
-        ofxToggle OPTFLOW_FARNEBACK_GAUSSIAN;
+        ofxToggle liveVideoFlag;
         // median filter
         ofxIntSlider medianScale; // メディアンフィルタのぼかしの大きさ
         // contourFinder
@@ -66,6 +65,8 @@ class ofApp : public ofBaseApp{
         ofxFloatSlider maxArea; // 最大面積比率
         ofxFloatSlider contourThresh; //輪郭閾値制御
         // optical flow
+        ofxToggle useFarneback;
+        ofxToggle OPTFLOW_FARNEBACK_GAUSSIAN;
         ofxFloatSlider flowScale;
         ofxFloatSlider pyrScale;
         ofxIntSlider iterations;
@@ -93,5 +94,6 @@ class ofApp : public ofBaseApp{
         void sendOpticalFlow();
         void sendFlowVector();
         void dumpOSC(ofxOscMessage m);
+        void imageAnalize();
         int oscCount,oscPositionCount,oscFlowCount;
 };

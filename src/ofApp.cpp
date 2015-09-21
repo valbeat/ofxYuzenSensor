@@ -17,15 +17,14 @@ void ofApp::setup(){
     camWidth = ofGetWidth();
     camHeight = ofGetHeight();
     
-    #ifdef _USE_LIVE_VIDEO
-        camera.listDevices();
-        camera.setVerbose(true);
-        camera.setDeviceID(0);
-        camera.initGrabber(camWidth,camHeight);
-    #else
-        video.loadMovie("cv_incam.mov");
-        video.play();
-    #endif
+    camera.listDevices();
+    camera.setVerbose(true);
+    camera.setDeviceID(0);
+    camera.initGrabber(camWidth,camHeight);
+    video.loadMovie("cv_incam.mov");
+    camWidth = video.getWidth();
+    camHeight = video.getHeight();
+    video.play();
     
     //背景の学習を設定
     background.setLearningTime(900);
@@ -77,6 +76,7 @@ void ofApp::setup(){
     gui.add(bgFlag.setup("background image",false));
     
     gui.add(*new ofParameter<String>(""));
+    gui.add(liveVideoFlag.setup("use live video",true)); //カメラを使うかどうか
     gui.add(fullScreenToggle.setup("full screen",true));
     gui.add(guiFlag.setup("gui",true));
     
@@ -86,57 +86,23 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    #ifdef _USE_LIVE_VIDEO
-    camera.update();
-    if(camera.isFrameNew()) {
-        ofxCv::medianBlur(camera, camera, medianScale); //ノイズがあるので平滑化
-        if (learnBgFlag) {
-            // 背景差分を取る
-            background.setThresholdValue(bgThresh);
-            background.update(camera, diffImg);
-            diffImg.update();
-        } else {
-            // フレーム差分を取る
-            
-        }
-        //輪郭の設定
-        contourFinder.setSortBySize(true);
-        contourFinder.setThreshold(contourThresh);
-        contourFinder.setMinAreaRadius(minRad);
-        contourFinder.setMaxAreaRadius(maxRad);
-        contourFinder.setMinArea(minArea * minArea * camWidth * camHeight);
-        contourFinder.setMaxArea(maxArea * maxArea * camWidth * camHeight);
-        contourFinder.findContours(diffImg);
-        sendContourPosition();
-        
-        if(flowFlag) {
-            if (useFarneback) {
-                //密なオプティカルフロー
-                curFlow = &farneback;
-                farneback.setPyramidScale(pyrScale);
-                farneback.setNumLevels(levels);
-                farneback.setWindowSize(winSize);
-                farneback.setNumIterations(iterations);
-                farneback.setPolySigma(polySigma);
-                farneback.setUseGaussian(OPTFLOW_FARNEBACK_GAUSSIAN);
-                farneback.calcOpticalFlow(camera);
-            } else {
-                //疎なオプティカルフロー
-                curFlow = &pyrLk;
-                pyrLk.setMaxFeatures(maxFeatures);
-                pyrLk.setQualityLevel(qualityLevel);
-                pyrLk.setMinDistance(minDistance);
-                pyrLk.setWindowSize(winSize);
-                pyrLk.setMaxLevel(maxLevel);
-                pyrLk.calcOpticalFlow(camera);
-            }
-        }
-        
-
-    }
-    #else
-    #endif
+    bool isNewFrame = false;
     
+    ofVideoPlayer image;
+    
+    if(liveVideoFlag) {
+        camera.update();
+        isNewFrame = camera.isFrameNew();
+    } else {
+        video.update();
+        isNewFrame = video.isFrameNew();
+    }
+    
+    if(isNewFrame) {
+        if (liveVideoFlag) {
+            imageAnalize();
+        }
+    }
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -170,6 +136,18 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key) {
+        case '0':
+            if (!liveVideoFlag)
+                video.firstFrame();
+        case '5':
+            if (!liveVideoFlag)
+                video.stop();
+        case '6':
+            if (!liveVideoFlag)
+                video.nextFrame();
+        case '4':
+            if (!liveVideoFlag)
+                video.previousFrame();
         case 'f':
             ofToggleFullscreen();
             break;
@@ -245,6 +223,52 @@ void ofApp::dumpOSC(ofxOscMessage m) {
             msg_string += m.getArgAsString(i);
     }
     cout << msg_string << endl;
+}
+//---------------------------------------------------------------
+void ofApp::imageAnalize() {
+    ofxCv::medianBlur(camera, camera, medianScale); //ノイズがあるので平滑化
+    if (learnBgFlag) {
+        // 背景差分を取る
+        background.setThresholdValue(bgThresh);
+        background.update(camera, diffImg);
+        diffImg.update();
+    } else {
+        // フレーム差分を取る
+        
+    }
+    //輪郭の設定
+    contourFinder.setSortBySize(true);
+    contourFinder.setThreshold(contourThresh);
+    contourFinder.setMinAreaRadius(minRad);
+    contourFinder.setMaxAreaRadius(maxRad);
+    contourFinder.setMinArea(minArea * minArea * camWidth * camHeight);
+    contourFinder.setMaxArea(maxArea * maxArea * camWidth * camHeight);
+    contourFinder.findContours(diffImg);
+    sendContourPosition();
+    
+    if(flowFlag) {
+        if (useFarneback) {
+            //密なオプティカルフロー
+            curFlow = &farneback;
+            farneback.setPyramidScale(pyrScale);
+            farneback.setNumLevels(levels);
+            farneback.setWindowSize(winSize);
+            farneback.setNumIterations(iterations);
+            farneback.setPolySigma(polySigma);
+            farneback.setUseGaussian(OPTFLOW_FARNEBACK_GAUSSIAN);
+            farneback.calcOpticalFlow(camera);
+        } else {
+            //疎なオプティカルフロー
+            curFlow = &pyrLk;
+            pyrLk.setMaxFeatures(maxFeatures);
+            pyrLk.setQualityLevel(qualityLevel);
+            pyrLk.setMinDistance(minDistance);
+            pyrLk.setWindowSize(winSize);
+            pyrLk.setMaxLevel(maxLevel);
+            pyrLk.calcOpticalFlow(camera);
+        }
+    }
+    
 }
 //--------------------------------------------------------------
 void ofApp::sendContourPosition() {
