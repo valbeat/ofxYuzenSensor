@@ -85,15 +85,15 @@ class ofApp : public ofBaseApp{
 
         //ボタンの動作
         void resetBackgroundPressed();
+        void toggleLiveVideoPressed();
         void toggleFullScreenPressed();
-
     
     private:
         ofxOscSender sender;
+        ofFbo fbo;
+        int oscCount,oscPositionCount,oscFlowCount;
         void sendContourPosition();
         void sendOpticalFlow();
         void sendFlowVector();
         void dumpOSC(ofxOscMessage m);
-        void imageAnalize();
-        int oscCount,oscPositionCount,oscFlowCount;
 };

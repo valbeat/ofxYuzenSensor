@@ -21,10 +21,12 @@ void ofApp::setup(){
     camera.setVerbose(true);
     camera.setDeviceID(0);
     camera.initGrabber(camWidth,camHeight);
+    
     video.loadMovie("cv_incam.mov");
-    camWidth = video.getWidth();
-    camHeight = video.getHeight();
     video.play();
+    
+    fbo.allocate(camWidth, camHeight, GL_RGB);
+    
     
     //背景の学習を設定
     background.setLearningTime(900);
@@ -87,9 +89,6 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     bool isNewFrame = false;
-    
-    ofVideoPlayer image;
-    
     if(liveVideoFlag) {
         camera.update();
         isNewFrame = camera.isFrameNew();
@@ -100,8 +99,60 @@ void ofApp::update(){
     
     if(isNewFrame) {
         if (liveVideoFlag) {
-            imageAnalize();
+            fbo.begin();
+            camera.draw(0, 0, fbo.getWidth(), fbo.getHeight());
+            fbo.end();
+        } else {
+            fbo.begin();
+            video.draw(0, 0, fbo.getWidth(), fbo.getHeight());
+            fbo.end();
         }
+        
+        ofPixels source;
+        fbo.readToPixels(source);
+        ofxCv::medianBlur(source, source, medianScale); //ノイズがあるので平滑化
+        if (learnBgFlag) {
+            // 背景差分を取る
+            background.setThresholdValue(bgThresh);
+            background.update(source, diffImg);
+            diffImg.update();
+        } else {
+            // フレーム差分を取る
+            
+        }
+        //輪郭の設定
+        contourFinder.setSortBySize(true);
+        contourFinder.setThreshold(contourThresh);
+        contourFinder.setMinAreaRadius(minRad);
+        contourFinder.setMaxAreaRadius(maxRad);
+        contourFinder.setMinArea(minArea * minArea * camWidth * camHeight);
+        contourFinder.setMaxArea(maxArea * maxArea * camWidth * camHeight);
+        contourFinder.findContours(diffImg);
+        sendContourPosition();
+        
+        if(flowFlag) {
+            if (useFarneback) {
+                //密なオプティカルフロー
+                curFlow = &farneback;
+                farneback.setPyramidScale(pyrScale);
+                farneback.setNumLevels(levels);
+                farneback.setWindowSize(winSize);
+                farneback.setNumIterations(iterations);
+                farneback.setPolySigma(polySigma);
+                farneback.setUseGaussian(OPTFLOW_FARNEBACK_GAUSSIAN);
+                farneback.calcOpticalFlow(source);
+            } else {
+                //疎なオプティカルフロー
+                curFlow = &pyrLk;
+                pyrLk.setMaxFeatures(maxFeatures);
+                pyrLk.setQualityLevel(qualityLevel);
+                pyrLk.setMinDistance(minDistance);
+                pyrLk.setWindowSize(winSize);
+                pyrLk.setMaxLevel(maxLevel);
+                pyrLk.calcOpticalFlow(source);
+            }
+        }
+
     }
 }
 //--------------------------------------------------------------
@@ -110,7 +161,7 @@ void ofApp::draw(){
     
     if (cameraFlag) {
         ofSetColor(255);
-        camera.draw(0, 0, camWidth, camHeight);
+        fbo.draw(0, 0, camWidth, camHeight);
     }
     if (bgFlag) {
         bgImg.draw(0, 0, camWidth, camHeight);
@@ -139,15 +190,21 @@ void ofApp::keyPressed(int key){
         case '0':
             if (!liveVideoFlag)
                 video.firstFrame();
+            break;
         case '5':
-            if (!liveVideoFlag)
-                video.stop();
+            if (!liveVideoFlag) {
+                if (video.isPaused()) video.play();
+                else video.stop();
+            }
+            break;
         case '6':
             if (!liveVideoFlag)
                 video.nextFrame();
+            break;
         case '4':
             if (!liveVideoFlag)
                 video.previousFrame();
+            break;
         case 'f':
             ofToggleFullscreen();
             break;
@@ -209,6 +266,10 @@ void ofApp::resetBackgroundPressed() {
 void ofApp::toggleFullScreenPressed() {
     ofToggleFullscreen();
 }
+void ofApp::toggleLiveVideoPressed() {
+    background.reset();
+    if (!liveVideoFlag) video.firstFrame();
+}
 //--------------------------------------------------------------
 void ofApp::dumpOSC(ofxOscMessage m) {
     String msg_string;
@@ -223,52 +284,6 @@ void ofApp::dumpOSC(ofxOscMessage m) {
             msg_string += m.getArgAsString(i);
     }
     cout << msg_string << endl;
-}
-//---------------------------------------------------------------
-void ofApp::imageAnalize() {
-    ofxCv::medianBlur(camera, camera, medianScale); //ノイズがあるので平滑化
-    if (learnBgFlag) {
-        // 背景差分を取る
-        background.setThresholdValue(bgThresh);
-        background.update(camera, diffImg);
-        diffImg.update();
-    } else {
-        // フレーム差分を取る
-        
-    }
-    //輪郭の設定
-    contourFinder.setSortBySize(true);
-    contourFinder.setThreshold(contourThresh);
-    contourFinder.setMinAreaRadius(minRad);
-    contourFinder.setMaxAreaRadius(maxRad);
-    contourFinder.setMinArea(minArea * minArea * camWidth * camHeight);
-    contourFinder.setMaxArea(maxArea * maxArea * camWidth * camHeight);
-    contourFinder.findContours(diffImg);
-    sendContourPosition();
-    
-    if(flowFlag) {
-        if (useFarneback) {
-            //密なオプティカルフロー
-            curFlow = &farneback;
-            farneback.setPyramidScale(pyrScale);
-            farneback.setNumLevels(levels);
-            farneback.setWindowSize(winSize);
-            farneback.setNumIterations(iterations);
-            farneback.setPolySigma(polySigma);
-            farneback.setUseGaussian(OPTFLOW_FARNEBACK_GAUSSIAN);
-            farneback.calcOpticalFlow(camera);
-        } else {
-            //疎なオプティカルフロー
-            curFlow = &pyrLk;
-            pyrLk.setMaxFeatures(maxFeatures);
-            pyrLk.setQualityLevel(qualityLevel);
-            pyrLk.setMinDistance(minDistance);
-            pyrLk.setWindowSize(winSize);
-            pyrLk.setMaxLevel(maxLevel);
-            pyrLk.calcOpticalFlow(camera);
-        }
-    }
-    
 }
 //--------------------------------------------------------------
 void ofApp::sendContourPosition() {
