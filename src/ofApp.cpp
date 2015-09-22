@@ -294,13 +294,14 @@ void ofApp::sendContourPosition() {
         float x = (rect.x + rect.x + rect.width)/2;
         float y = (rect.y + rect.y + rect.height)/2;
         // z方向は面積から取得
-        float area = rect.area();
+        float area = (rect.width / 10) * rect.height;
+        float z = 2.25 / (area /10000);
         ofxOscMessage m;
         m.setAddress("/user/position");
         m.addIntArg(contourFinder.getLabel(i));
         m.addIntArg(x);
         m.addIntArg(y);
-        m.addIntArg(area);
+        m.addIntArg(z);
 //        m.addIntArg(oscCount);
         sender.sendMessage(m);
         dumpOSC(m);
