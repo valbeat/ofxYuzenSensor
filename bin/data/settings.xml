@@ -2,6 +2,7 @@
 	<UnknownName>
 	
 	
+	
 	50
 	1
 	80
@@ -53,6 +54,35 @@
 	4
 	1
 	1
+	1
+	0
+	0
+	1
+
+
+	16
+	1
+	40
+	10
+	12
+	200
+	0.023
+	0.31
+	1
+	0.5
+	4
+	64
+	1
+	7
+	1.5
+	0
+	0.05
+	0.01
+	3
+	200
+	4
+	1
+	0
 	1
 	0
 	0
@@ -87,4 +117,5 @@
 	<background_image>0</background_image>
 	<gui>1</gui>
 <group/>
+<use_live_video>0</use_live_video>
 </group>
