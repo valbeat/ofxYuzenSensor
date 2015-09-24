@@ -289,10 +289,10 @@ void ofApp::dumpOSC(ofxOscMessage m) {
 void ofApp::sendContourPosition() {
     float x,y,z;
     for (int i = 0; i < contourFinder.size(); i++) {
-        // 座標を重心に設定する TODO:centroidを使えばok
+        // 座標を重心に設定する
         cv::Rect rect = contourFinder.getBoundingRect(i);
-        float x = (rect.x + rect.x + rect.width)/2;
-        float y = (rect.y + rect.y + rect.height)/2;
+        float x = (contourFinder.getCentroid(i).x- ofGetWidth() / 2) /10;
+        float y = (-contourFinder.getCentroid(i).y + ofGetHeight()) / 10;
         // z方向は面積から取得
         float area = (rect.width / 10) * rect.height;
         float z = 2.25 / (area /10000);
