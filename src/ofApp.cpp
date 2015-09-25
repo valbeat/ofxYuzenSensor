@@ -291,17 +291,19 @@ void ofApp::sendContourPosition() {
     for (int i = 0; i < contourFinder.size(); i++) {
         // 座標を重心に設定する
         cv::Rect rect = contourFinder.getBoundingRect(i);
-        float x = (contourFinder.getCentroid(i).x- ofGetWidth() / 2) /10;
-        float y = (-contourFinder.getCentroid(i).y + ofGetHeight()) / 10;
         // z方向は面積から取得
         float area = (rect.width / 10) * rect.height;
-        float z = 2.25 / (area /10000);
+        float z = ofMap((2.25 / (area /10000)) / 2, 0, 30,- 20, 10);
+        float x = ofMap(contourFinder.getCentroid(i).x,
+                        0, ofGetWidth(),- ofGetWidth() / 20, ofGetWidth() / 20);
+        float y = ofMap((-contourFinder.getCentroid(i).y + ofGetHeight()) /10,
+                         40, 100, 0, 20);
         ofxOscMessage m;
         m.setAddress("/user/position");
-        m.addIntArg(contourFinder.getLabel(i));
-        m.addIntArg(x);
-        m.addIntArg(y);
-        m.addIntArg(z);
+        m.addIntArg(i);
+        m.addFloatArg(x);
+        m.addFloatArg(y);
+        m.addFloatArg(z);
 //        m.addIntArg(oscCount);
         sender.sendMessage(m);
         dumpOSC(m);
