@@ -293,9 +293,9 @@ void ofApp::sendContourPosition() {
         cv::Rect rect = contourFinder.getBoundingRect(i);
         // z方向は面積から取得
         float area = (rect.width / 10) * rect.height;
-        float z = ofMap((2.25 / (area /10000)) / 2, 0, 50,-50, 10);
+        float z = 2.25 / (area /10000);
         float x = ofMap(contourFinder.getCentroid(i).x,0, ofGetWidth(),0, 1);
-        float y = ofMap(contourFinder.getCentroid(i).y,0, ofGetHeight(),1, 0);
+        float y = ofMap(contourFinder.getCentroid(i).y,0, ofGetHeight(),0, 1);
         ofxOscMessage m;
         m.setAddress("/user/position");
         m.addIntArg(i);
