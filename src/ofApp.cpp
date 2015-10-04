@@ -19,7 +19,7 @@ void ofApp::setup(){
     
     camera.listDevices();
     camera.setVerbose(true);
-    camera.setDeviceID(0);
+    camera.setDeviceID(1);
     camera.initGrabber(camWidth,camHeight);
     
     video.loadMovie("cv_incam.mov");
@@ -83,6 +83,11 @@ void ofApp::setup(){
     gui.add(guiFlag.setup("gui",true));
     
     gui.loadFromFile("settings.xml");
+    
+//    mainOutputSyphonServer.setName("Screen Outputh");
+    syphonClient.setup();
+    syphonClient.setApplicationName("Simple Server");
+    syphonClient.setServerName("");
 
 }
 
@@ -181,7 +186,9 @@ void ofApp::draw(){
         ofSetColor(255);
         if (useFarneback) farneback.draw(0, 0, camWidth, camHeight);
         else pyrLk.draw(0, 0, camWidth, camHeight);
-    }
+   }
+//    syphonClient.draw(50, 50);
+    syphonServer.publishScreen();
 }
 
 //--------------------------------------------------------------
@@ -294,7 +301,7 @@ void ofApp::sendContourPosition() {
         // z方向は面積から取得
         float area = (rect.width / 10) * rect.height;
         float z = 2.25 / (area /10000);
-        float x = ofMap(contourFinder.getCentroid(i).x,0, ofGetWidth(),0, 1);
+        float x = ofMap(contourFinder.getCentroid(i).x,0, ofGetWidth(),1, 0);
         float y = ofMap(contourFinder.getCentroid(i).y,0, ofGetHeight(),0, 1);
         ofxOscMessage m;
         m.setAddress("/user/position");

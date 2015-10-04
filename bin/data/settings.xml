@@ -4,6 +4,7 @@
 	
 	
 	
+	
 	50
 	1
 	80
@@ -119,8 +120,38 @@
 	1
 
 0
+
+	16
+	1
+	40
+	10
+	12
+	200
+	0.023
+	0.31
+	1
+	0.5
+	4
+	64
+	1
+	7
+	1.5
+	0
+	0.05
+	0.01
+	3
+	200
+	4
+	1
+	1
+	1
+	0
+	0
+	1
+
+1
 </UnknownName>
-	<median_Blur_Size>16</median_Blur_Size>
+	<median_Blur_Size>7</median_Blur_Size>
 	<Learn_BG>1</Learn_BG>
 	<background_thresh>40</background_thresh>
 	<contour_finder_thresh>10</contour_finder_thresh>

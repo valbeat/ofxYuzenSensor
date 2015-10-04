@@ -4,6 +4,7 @@
 #include "ofxCv.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"
+#include "ofxSyphon.h"
 #define _USE_LIVE_VIDEO
 
 #define HOST "localhost" //送信先ホストのIPを設定
@@ -38,6 +39,11 @@ class ofApp : public ofBaseApp{
         ofxCv::Flow* curFlow;
         ofxCv::FlowFarneback farneback;//密なオプティカルフロー
         ofxCv::FlowPyrLK pyrLk; //疎なオブティカルフロー
+    
+        //ofxSyphon
+        ofxSyphonServer syphonServer;
+        ofxSyphonClient syphonClient;
+    
     
         // 画像
         ofImage bgImg; //背景画像
