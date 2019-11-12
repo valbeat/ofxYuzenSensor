@@ -1,12 +1,31 @@
+
+
 # hidden/temp files
 .DS_Store
 *.swp
 *~.nib
   
-# Build dir
-build/
+# general
+
+*/[Bb]uild/
+*/[Oo]bj/
+*.o
+*/[Dd]ebug*/
+*/[Rr]elease*/
+*.mode*
+*.app/
+*.pyc
+.svn/
+*.log
     
 # Xcode project files except for the project file
 *.xcodeproj/
 !*.xcodeproj/project.pbxproj
 *.mov
+
+# ignore generated binaries
+# but not the data folder
+
+*/bin/*
+!*/bin/data/
+
