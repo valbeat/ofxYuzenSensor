@@ -3,10 +3,10 @@
 *.swp
 *~.nib
   
-  # Build dir
-  build/
+# Build dir
+build/
     
-    # Xcode project files except for the project file
-    *.xcodeproj/
-    !*.xcodeproj/project.pbxproj
+# Xcode project files except for the project file
+*.xcodeproj/
+!*.xcodeproj/project.pbxproj
 *.mov
